@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import com.example.demo.persistence.model.VehicleDto;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Класс-контроллер приложения. 
@@ -88,38 +91,34 @@ public class MyRestVehicleController {
 	    * @return объект, вставленный в базу данных.
 	    **/
 
-	@PutMapping(produces = "application/json", consumes = "application/json")
-	public ResponseEntity<VehicleDto> putVehicle(@RequestBody VehicleDto vehicleDto, HttpServletRequest request)
+	@PutMapping(value = "/{guid}")
+	public ResponseEntity<VehicleDto> updateVehicle(@RequestBody VehicleDto vehicleDto,@PathVariable("guid") String guid, HttpServletRequest request)throws EntityNotFoundException
 	{
-
-
-		vehicleDto=vehicleDtoRepository.save(vehicleDto);
-
-
-		logger.info("Vehicle with Guid={} was update!", vehicleDto.getGuid());
+		Optional<VehicleDto> v = vehicleDtoRepository.findById(guid);
+		if (!v.isPresent())
+			throw new EntityNotFoundException("id-" + guid);
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
-				.body(vehicleDto);
+				.body(vehicleDtoRepository.save(vehicleDto));
 	}
 	/**
+	 * vehicleDto=vehicleDtoRepository.save(vehicleDto);
+	 * 		logger.info("Vehicle with Guid={} was update!", vehicleDto.getGuid());
 	 * Метод, отвечающий за обработку get запросов по адресу
 	 * http://localhost:8080/my/{id} Метод принимает id аккаунта пользователя
 	 * и возвращает пользователя из базы данных в виде json объекта.
 	 * @param request параметры запроса.
 	 * @return пользователь из базы данных в виде json
+	 *
 	 */
 	@GetMapping(value = "/{guid}")
 	public ResponseEntity<VehicleDto> getVehicle(@PathVariable(value = "guid") String guid, HttpServletRequest request)
 	{
-
 		/**
 		 * Вытаскиваем пользователя из базы по его guid.
 		 */
-
 		VehicleDto vehicleDto = vehicleDtoRepository.getOne(guid);
-	//	VehicleDto vehicleDto = vehicleDtoRepository.getOne(guid);
-
 		/**
 		 * Возвращаем ответ.
 		 */
