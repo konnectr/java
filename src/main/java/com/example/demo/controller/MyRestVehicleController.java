@@ -1,21 +1,29 @@
 package com.example.demo.controller;
 
+
+import org.hibernate.annotations.AnyMetaDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 import com.example.demo.persistence.dao.VehicleDtoRepository;
 import com.example.demo.persistence.model.VehicleDto;
+import com.example.demo.persistence.service.VehicleDtoService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -32,35 +40,23 @@ public class MyRestVehicleController {
 	public static final Logger logger = LoggerFactory.getLogger(MyRestVehicleController.class);
 
 	public MyRestVehicleController() {
-		logger.info("MyRestController was created!");
+
 	}
 
-	@Autowired
+
 	/**
 	 * Поле репозитория, которое будет заполнено при 
 	 */
 	//private UserAccountRepository userAccountRepository;
+	@Autowired
 	private VehicleDtoRepository vehicleDtoRepository;
+
+	@Autowired
+	private VehicleDtoService vehicleDtoService;
 
 	public String getCurrentTimeStamp() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 	}
-	/**
-	 * Метод, отвечающий за обработку post запросов по адресу
-	 * http://localhost:8080/my Метод принимает объект типа UserAccount
-	 * в теле запроса замаршаленный в json объект (Маршалинг - процесс
-	 * преобразования объекта в json/xml/yaml/tree)
-	 *
-	 * Пример запроса:
-	 * {
-	 *   "username":"user",
-	 *   "password":"qwerty"
-	 * }
-	 *
-	 * @param vehicleDto принимаемый объект. spring демаршалит его за нас.
-	 * @param request параметры запроса.
-	 * @return объект, вставленный в базу данных.
-	 */
 
 	@PostMapping(produces = "application/json", consumes = "application/json")
 	public ResponseEntity<VehicleDto> postVehicle(@RequestBody VehicleDto vehicleDto, HttpServletRequest request) {
@@ -85,46 +81,69 @@ public class MyRestVehicleController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleDto);
 	}
-      /**
-	    * @param vehicleDto принимаемый объект. spring демаршалит его за нас.
-	    * @param request параметры запроса.
-	    * @return объект, вставленный в базу данных.
-	    **/
 
-	@PutMapping(value = "/{guid}")
+	/**@PutMapping(value = "/{guid}")
 	public ResponseEntity<VehicleDto> updateVehicle(@RequestBody VehicleDto vehicleDto,@PathVariable("guid") String guid, HttpServletRequest request)throws EntityNotFoundException
 	{
 		Optional<VehicleDto> v = vehicleDtoRepository.findById(guid);
 		if (!v.isPresent())
 			throw new EntityNotFoundException("id-" + guid);
+		vehicleDto.setDataInsert(vehicleDto.getDataInsert());
+		vehicleDto.setSt
+		vehicleDto.setDatePurchase(getCurrentTimeStamp());
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleDtoRepository.save(vehicleDto));
 	}
-	/**
-	 * vehicleDto=vehicleDtoRepository.save(vehicleDto);
-	 * 		logger.info("Vehicle with Guid={} was update!", vehicleDto.getGuid());
-	 * Метод, отвечающий за обработку get запросов по адресу
-	 * http://localhost:8080/my/{id} Метод принимает id аккаунта пользователя
-	 * и возвращает пользователя из базы данных в виде json объекта.
-	 * @param request параметры запроса.
-	 * @return пользователь из базы данных в виде json
-	 *
-	 */
-	@GetMapping(value = "/{guid}")
-	public ResponseEntity<VehicleDto> getVehicle(@PathVariable(value = "guid") String guid, HttpServletRequest request)
-	{
-		/**
-		 * Вытаскиваем пользователя из базы по его guid.
-		 */
-		VehicleDto vehicleDto = vehicleDtoRepository.getOne(guid);
-		/**
-		 * Возвращаем ответ.
-		 */
+
+	 **/
+
+
+	@GetMapping(value = "/all")
+	public ResponseEntity<List<VehicleDto>> allVehicle( HttpServletRequest request) {
+
+
+
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
-				.body(vehicleDto);
+				.body(vehicleDtoService.listAllVehicles());
+
 	}
+	@GetMapping(value= "/search")
+	public ResponseEntity<List<VehicleDto>> searchVehicle(@RequestParam("vehicleType") String vehicleType,
+														  @RequestParam("marque") String marque,
+														  @RequestParam("model") String model,
+														  @RequestParam("engine") String engine,
+														  @RequestParam("status") String status	) {
+		if(status!="")
+		{
+			return ResponseEntity
+					.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(vehicleDtoRepository.findByVehicleTypeAndMarqueAndModelAndEngineAndStatus(vehicleType,marque,model,engine,status));
+		}
+		else
+		{
+			return ResponseEntity
+					.ok()
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(vehicleDtoRepository.findByVehicleTypeAndMarqueAndModelAndEngine(vehicleType,marque,model,engine));
+		}
+
+	}
+
+	@GetMapping(value = "/{guid}")
+	public ResponseEntity<VehicleDto> getVehicle(@PathVariable(value = "guid") String guid, HttpServletRequest request)
+	{
+
+		VehicleDto vehicleDto = vehicleDtoRepository.getOne(guid);
+
+		return ResponseEntity
+			.ok()
+			.contentType(MediaType.APPLICATION_JSON)
+				.body(vehicleDto);
+}
+
 }
