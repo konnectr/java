@@ -2,7 +2,6 @@ package com.example.demo.persistence.model;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;

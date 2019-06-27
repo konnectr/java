@@ -28,7 +28,7 @@ public class VehicleTypeDto {
 	/**
 	 * Поля объекта, соответствующие полям таблицы в БД.
 	 */
-	int count;
+	long count;
 
 
 }

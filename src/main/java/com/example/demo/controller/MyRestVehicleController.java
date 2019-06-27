@@ -1,7 +1,8 @@
 package com.example.demo.controller;
 
 
-import org.hibernate.annotations.AnyMetaDef;
+import com.example.demo.persistence.dao.VehicleTypeDtoRepository;
+import com.example.demo.persistence.model.VehicleTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,10 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +22,7 @@ import com.example.demo.persistence.model.VehicleDto;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
 
 /**
  * Класс-контроллер приложения. 
@@ -45,8 +42,8 @@ public class MyRestVehicleController {
 	@Autowired
 	private VehicleDtoRepository vehicleDtoRepository;
 
-	//@Autowired
-	//private VehicleDtoService vehicleDtoService;
+	@Autowired
+	private VehicleTypeDtoRepository vehicleTypeDtoRepository;
 
 	public String getCurrentTimeStamp() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -99,7 +96,7 @@ public class MyRestVehicleController {
 	}
 
 	@GetMapping(value = "/all")
-	public ResponseEntity<List<VehicleDto>> allVehicle( HttpServletRequest request) {
+	public ResponseEntity<List<VehicleDto>> allVehicle() {
 
 
 
@@ -137,11 +134,37 @@ public class MyRestVehicleController {
 	{
 
 		VehicleDto vehicleDto = vehicleDtoRepository.getOne(guid);
-
 		return ResponseEntity
 			.ok()
 			.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleDto);
-}
-
+	}
+	@GetMapping(value = "/types")
+	public ResponseEntity<List<VehicleTypeDto>> typesVehicle() throws EntityNotFoundException
+	{
+		long supercar = vehicleDtoRepository.countByVehicleType("supercar");
+		VehicleTypeDto vehicleTypeDto=vehicleTypeDtoRepository.findById("supercar")
+				.orElseThrow(()-> new EntityNotFoundException("supercar"));
+		vehicleTypeDto.setCount(supercar);
+		long jet = vehicleDtoRepository.countByVehicleType("jet");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("jet")
+				.orElseThrow(()-> new EntityNotFoundException("jet"));
+		vehicleTypeDto.setCount(jet);
+		long ship = vehicleDtoRepository.countByVehicleType("ship");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("ship")
+				.orElseThrow(()-> new EntityNotFoundException("ship"));
+		vehicleTypeDto.setCount(ship);
+		long helicopter = vehicleDtoRepository.countByVehicleType("helicopter");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("helicopter")
+				.orElseThrow(()-> new EntityNotFoundException("helicopter"));
+		vehicleTypeDto.setCount(helicopter);
+		long submarine = vehicleDtoRepository.countByVehicleType("ц");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("submarine")
+				.orElseThrow(()-> new EntityNotFoundException("submarine"));
+		vehicleTypeDto.setCount(submarine);
+		return ResponseEntity
+				.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(vehicleTypeDtoRepository.findAll());
+	}
 }
