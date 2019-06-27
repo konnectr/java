@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.persistence.dao.VehicleDtoRepository;
 import com.example.demo.persistence.model.VehicleDto;
-import com.example.demo.persistence.service.VehicleDtoService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,8 +45,8 @@ public class MyRestVehicleController {
 	@Autowired
 	private VehicleDtoRepository vehicleDtoRepository;
 
-	@Autowired
-	private VehicleDtoService vehicleDtoService;
+	//@Autowired
+	//private VehicleDtoService vehicleDtoService;
 
 	public String getCurrentTimeStamp() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -98,7 +97,7 @@ public class MyRestVehicleController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleDtoRepository.save(vehicleDto));
 	}
-	
+
 	@GetMapping(value = "/all")
 	public ResponseEntity<List<VehicleDto>> allVehicle( HttpServletRequest request) {
 
@@ -107,7 +106,7 @@ public class MyRestVehicleController {
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
-				.body(vehicleDtoService.listAllVehicles());
+				.body(vehicleDtoRepository.findAll());
 
 	}
 	@GetMapping(value= "/search")

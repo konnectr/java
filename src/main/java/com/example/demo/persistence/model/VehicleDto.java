@@ -44,19 +44,5 @@ public class VehicleDto {
     String dataInsert;
     String datePurchase;
     String status;
-    public VehicleDto(){}
-    public VehicleDto(String guid,  String vehicleType, String marque, String model,String engine,String enginePowerBhp,int topSpeedMph,int costUsd,int price,String dataInsert,String datePurchase,String status) {
-        this.guid=guid;
-        this.vehicleType=vehicleType;
-        this.marque=marque;
-        this.model = model;
-        this.engine = engine;
-        this.enginePowerBhp=enginePowerBhp;
-        this.topSpeedMph=topSpeedMph;
-        this.costUsd=costUsd;
-        this.price=price;
-        this.dataInsert=dataInsert;
-        this.datePurchase=datePurchase;
-        this.status=status;
-    }
+
 }
