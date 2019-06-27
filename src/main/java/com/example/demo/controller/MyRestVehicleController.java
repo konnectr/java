@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -39,15 +41,8 @@ public class MyRestVehicleController {
 
 	public static final Logger logger = LoggerFactory.getLogger(MyRestVehicleController.class);
 
-	public MyRestVehicleController() {
+	public MyRestVehicleController() {	}
 
-	}
-
-
-	/**
-	 * Поле репозитория, которое будет заполнено при 
-	 */
-	//private UserAccountRepository userAccountRepository;
 	@Autowired
 	private VehicleDtoRepository vehicleDtoRepository;
 
@@ -64,7 +59,7 @@ public class MyRestVehicleController {
 		 * Сохраняем машину  в базу данных.
 		 */
 		vehicleDto.setDataInsert(getCurrentTimeStamp());
-		vehicleDto.setDatePurchase(getCurrentTimeStamp());
+
 		if (vehicleDto.getStatus()==null) vehicleDto.setStatus("in stock");
 		vehicleDto = vehicleDtoRepository.save(vehicleDto);
 
@@ -82,24 +77,28 @@ public class MyRestVehicleController {
 				.body(vehicleDto);
 	}
 
-	/**@PutMapping(value = "/{guid}")
-	public ResponseEntity<VehicleDto> updateVehicle(@RequestBody VehicleDto vehicleDto,@PathVariable("guid") String guid, HttpServletRequest request)throws EntityNotFoundException
+	@PutMapping(value = "/{guid}")
+	public ResponseEntity<VehicleDto> updateVehicle(@PathVariable("guid") String guid,@Valid @RequestBody VehicleDto vehicleDtodetalis, HttpServletRequest request)throws EntityNotFoundException
 	{
-		Optional<VehicleDto> v = vehicleDtoRepository.findById(guid);
-		if (!v.isPresent())
-			throw new EntityNotFoundException("id-" + guid);
-		vehicleDto.setDataInsert(vehicleDto.getDataInsert());
-		vehicleDto.setSt
+		VehicleDto vehicleDto=vehicleDtoRepository.findById(guid)
+				.orElseThrow(()-> new EntityNotFoundException(guid));
+		vehicleDto.setVehicleType(vehicleDtodetalis.getVehicleType());
+		vehicleDto.setMarque(vehicleDtodetalis.getMarque());
+		vehicleDto.setModel(vehicleDtodetalis.getModel());
+		vehicleDto.setEngine(vehicleDtodetalis.getEngine());
+		vehicleDto.setEnginePowerBhp(vehicleDtodetalis.getEnginePowerBhp());
+		vehicleDto.setTopSpeedMph(vehicleDtodetalis.getTopSpeedMph());
+		vehicleDto.setCostUsd(vehicleDtodetalis.getCostUsd());
+		vehicleDto.setPrice(vehicleDtodetalis.getPrice());
+		vehicleDto.setStatus(vehicleDtodetalis.getStatus());
+		vehicleDto.setDataInsert(vehicleDtodetalis.getDataInsert());
 		vehicleDto.setDatePurchase(getCurrentTimeStamp());
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleDtoRepository.save(vehicleDto));
 	}
-
-	 **/
-
-
+	
 	@GetMapping(value = "/all")
 	public ResponseEntity<List<VehicleDto>> allVehicle( HttpServletRequest request) {
 
