@@ -23,8 +23,7 @@ import com.example.demo.persistence.dao.VehicleDtoRepository;
 import com.example.demo.persistence.model.VehicleDto;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/vehicle")
@@ -163,13 +162,22 @@ public class MyRestVehicleController {
 				.body(vehicleStatusDtoRepository.findAll());
 	}
 	@GetMapping(value = "/max")
-	public ResponseEntity<List<VehicleStatusDto>> maxVehicle() throws EntityNotFoundException
+	public ResponseEntity<List<?>> maxTypeVehicle() throws EntityNotFoundException
 	{
-
-
+		List<VehicleTypeDto> vehicleTypeDto=vehicleTypeDtoRepository.findAll();
+		List<VehicleMarqueDto> vehicleMarqueDto=vehicleMarqueDtoRepository.findAll();
+		List<VehicleStatusDto> vehicleStatusDto=vehicleStatusDtoRepository.findAll();
+		VehicleTypeDto maxType = vehicleTypeDto.stream().max(Comparator.comparing(vehicleTypeDtol ->vehicleTypeDtol.getCount())).get();
+		VehicleMarqueDto maxMarque = vehicleMarqueDto.stream().max(Comparator.comparing(vehicleMarqueDto1 -> vehicleMarqueDto1.getCount())).get();
+		VehicleStatusDto maxStatus = vehicleStatusDto.stream().max(Comparator.comparing(vehicleStatusDto1 -> vehicleStatusDto1.getCount())).get();
+		List<VehicleTypeDto> vehicleallDto = new ArrayList<>();
+		vehicleallDto.add(new VehicleTypeDto(maxType.getName(),maxType.getCount()));
+		vehicleallDto.add(new VehicleTypeDto(maxMarque.getName(),maxMarque.getCount()));
+		vehicleallDto.add(new VehicleTypeDto(maxStatus.getName(),maxStatus.getCount()));
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
-				.body(vehicleStatusDtoRepository.findAll());
+				.body(vehicleallDto);
+
 	}
 }
