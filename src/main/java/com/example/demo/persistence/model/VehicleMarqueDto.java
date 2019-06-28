@@ -16,4 +16,10 @@ public class VehicleMarqueDto {
 	@Id
 	String name;
 	long count;
+	VehicleMarqueDto(){}
+	public VehicleMarqueDto(String name,long count)
+	{
+		this.name=name;
+		this.count=count;
+	}
 }

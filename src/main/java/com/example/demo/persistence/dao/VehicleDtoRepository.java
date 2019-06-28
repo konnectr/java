@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface VehicleDtoRepository extends JpaRepository<VehicleDto, String> {
     long countByVehicleType(String vehicleType);
     long countByMarque(String vehicleMarque);
+    long countByStatus(String vehicleStatus);
     List<VehicleDto> findByVehicleTypeAndMarqueAndModelAndEngineAndStatus(@Param("vehicleType") String vehicleType,@Param("marque") String Marque,@Param("model") String Model,@Param("engine") String engine,@Param("status") String Status);
     List<VehicleDto> findByVehicleTypeAndMarqueAndModelAndEngine(@Param("vehicleType") String vehicleType,@Param("marque") String Marque,@Param("model") String Model,@Param("engine") String Engine);
 }
