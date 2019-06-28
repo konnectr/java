@@ -1,7 +1,10 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.persistence.dao.VehicleMarqueDtoRepository;
+import com.example.demo.persistence.dao.VehicleStatusDtoRepository;
 import com.example.demo.persistence.dao.VehicleTypeDtoRepository;
+import com.example.demo.persistence.model.VehicleMarqueDto;
 import com.example.demo.persistence.model.VehicleTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,10 @@ public class MyRestVehicleController {
 
 	@Autowired
 	private VehicleTypeDtoRepository vehicleTypeDtoRepository;
+	@Autowired
+	private VehicleMarqueDtoRepository vehicleMarqueDtoRepository;
+	@Autowired
+	private VehicleStatusDtoRepository vehicleStatusDtoRepository;
 
 	public String getCurrentTimeStamp() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -57,6 +64,13 @@ public class MyRestVehicleController {
 		vehicleDto.setDataInsert(getCurrentTimeStamp());
 
 		if (vehicleDto.getStatus()==null) vehicleDto.setStatus("in stock");
+		vehicleTypeDtoRepository.findById(vehicleDto.getVehicleType())
+				.orElse(vehicleTypeDtoRepository.save(new VehicleTypeDto(vehicleDto.getVehicleType(),1)));
+		vehicleMarqueDtoRepository.findById(vehicleDto.getMarque())
+				.orElse(vehicleMarqueDtoRepository.save(new VehicleTypeDto(vehicleDto.getMarque(),1)));
+		vehicleTypeDtoRepository.findById(vehicleDto.getStatus())
+				.orElse(vehicleStatusDtoRepository.save(new VehicleTypeDto(vehicleDto.getStatus(),1)));
+
 		vehicleDto = vehicleDtoRepository.save(vehicleDto);
 
 		/**
@@ -97,9 +111,6 @@ public class MyRestVehicleController {
 
 	@GetMapping(value = "/all")
 	public ResponseEntity<List<VehicleDto>> allVehicle() {
-
-
-
 		return ResponseEntity
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +169,7 @@ public class MyRestVehicleController {
 		vehicleTypeDto=vehicleTypeDtoRepository.findById("helicopter")
 				.orElseThrow(()-> new EntityNotFoundException("helicopter"));
 		vehicleTypeDto.setCount(helicopter);
-		long submarine = vehicleDtoRepository.countByVehicleType("ц");
+		long submarine = vehicleDtoRepository.countByVehicleType("submarine");
 		vehicleTypeDto=vehicleTypeDtoRepository.findById("submarine")
 				.orElseThrow(()-> new EntityNotFoundException("submarine"));
 		vehicleTypeDto.setCount(submarine);
@@ -167,4 +178,32 @@ public class MyRestVehicleController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleTypeDtoRepository.findAll());
 	}
+	/**@GetMapping(value = "/model")
+	public ResponseEntity<List<VehicleTypeDto>> typesModel() throws EntityNotFoundException
+	{
+		long supercar = vehicleDtoRepository.countByVehicleType("supercar");
+		VehicleTypeDto vehicleTypeDto=vehicleTypeDtoRepository.findById("supercar")
+				.orElseThrow(()-> new EntityNotFoundException("supercar"));
+		vehicleTypeDto.setCount(supercar);
+		long jet = vehicleDtoRepository.countByVehicleType("jet");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("jet")
+				.orElseThrow(()-> new EntityNotFoundException("jet"));
+		vehicleTypeDto.setCount(jet);
+		long ship = vehicleDtoRepository.countByVehicleType("ship");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("ship")
+				.orElseThrow(()-> new EntityNotFoundException("ship"));
+		vehicleTypeDto.setCount(ship);
+		long helicopter = vehicleDtoRepository.countByVehicleType("helicopter");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("helicopter")
+				.orElseThrow(()-> new EntityNotFoundException("helicopter"));
+		vehicleTypeDto.setCount(helicopter);
+		long submarine = vehicleDtoRepository.countByVehicleType("submarine");
+		vehicleTypeDto=vehicleTypeDtoRepository.findById("submarine")
+				.orElseThrow(()-> new EntityNotFoundException("submarine"));
+		vehicleTypeDto.setCount(submarine);
+		return ResponseEntity
+				.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(vehicleTypeDtoRepository.findAll());
+	}**/
 }

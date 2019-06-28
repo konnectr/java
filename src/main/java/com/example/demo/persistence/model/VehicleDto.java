@@ -9,29 +9,15 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 
-
-
-
-/**
- * Аккаунт пользователя. Объект-отображение таблицы user_account в базе данных.
- */
 @ToString
 @Data
 @Entity
 @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class VehicleDto {
-
-    /**
-     * Аннотация обозначающая первичный ключ.
-     */
     @Id
     @GeneratedValue(generator="uuid")
     @GenericGenerator(name="uuid",strategy = "uuid2")
     String guid;
-
-    /**
-     * Поля объекта, соответствующие полям таблицы в БД.
-     */
     String vehicleType;
     String marque;
     String model;
