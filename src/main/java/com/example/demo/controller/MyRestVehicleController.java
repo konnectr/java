@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -179,5 +180,28 @@ public class MyRestVehicleController {
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(vehicleallDto);
 
+	}
+	@GetMapping(value = "/reverse")
+	public ResponseEntity<VehicleDto> reverse()
+	{
+		VehicleDto vehicleDto= vehicleDtoRepository.getOne(vehicleDtoRepository.getValues());
+		VehicleDto vehicleDtonew = new VehicleDto();
+		vehicleDtonew.setGuid(new StringBuffer(vehicleDto.getGuid()).reverse().toString());
+		vehicleDtonew.setVehicleType(new StringBuffer(vehicleDto.getVehicleType()).reverse().toString());
+		vehicleDtonew.setMarque(new StringBuffer(vehicleDto.getMarque()).reverse().toString());
+		vehicleDtonew.setModel(new StringBuffer(vehicleDto.getModel()).reverse().toString());
+		vehicleDtonew.setEngine(new StringBuffer(vehicleDto.getEngine()).reverse().toString());
+		vehicleDtonew.setEnginePowerBhp(new StringBuffer(vehicleDto.getEnginePowerBhp()).reverse().toString());
+		vehicleDtonew.setTopSpeedMph(vehicleDto.getTopSpeedMph());
+		vehicleDtonew.setCostUsd(vehicleDto.getCostUsd());
+		vehicleDtonew.setDataInsert(vehicleDto.getDataInsert());
+		vehicleDtonew.setDatePurchase(vehicleDto.getDatePurchase());
+		vehicleDtonew.setStatus(new StringBuffer(vehicleDto.getStatus()).reverse().toString());
+		vehicleDtoRepository.delete(vehicleDto);
+		vehicleDtonew=vehicleDtoRepository.save(vehicleDtonew);
+		return ResponseEntity
+				.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(vehicleDtonew);
 	}
 }
