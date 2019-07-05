@@ -1,0 +1,12 @@
+com\example\demo\persistence\dao\VehicleStatusDtoRepository.class
+com\example\demo\DemoApplication.class
+com\example\demo\persistence\model\VehicleDto.class
+com\example\demo\DemoApplication$DemoCommandLineRunner.class
+com\example\demo\persistence\model\VehicleMarqueDto.class
+com\example\demo\controller\MyRestVehicleController.class
+com\example\demo\persistence\dao\VehicleTypeDtoRepository.class
+com\example\demo\persistence\dao\VehicleDtoRepository.class
+com\example\demo\persistence\model\VehicleStatusDto.class
+com\example\demo\service\ScheduledTasks.class
+com\example\demo\persistence\model\VehicleTypeDto.class
+com\example\demo\persistence\dao\VehicleMarqueDtoRepository.class
